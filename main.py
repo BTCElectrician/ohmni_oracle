@@ -11,6 +11,7 @@ from openai import AsyncOpenAI
 from tqdm.asyncio import tqdm
 from templates.room_templates import process_architectural_drawing
 from utils.pdf_processor import extract_text_and_tables_from_pdf
+from utils.drawing_processor import process_drawing
 
 # Suppress pdfminer debug output
 logging.getLogger('pdfminer').setLevel(logging.ERROR)
@@ -77,20 +78,9 @@ async def process_pdf_async(pdf_path, client, output_folder, drawing_type, templ
             raw_content = await extract_text_and_tables_from_pdf(pdf_path)
             
             pbar.update(20)  # Text and tables extracted
-            response = await async_safe_api_call(
-                client,
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": f"You are an expert in parsing {drawing_type} drawings. Structure the following content into a valid JSON format. The content includes both text and tables. Extract key information relevant to this type of drawing. Ensure your entire response is a valid JSON object."},
-                    {"role": "user", "content": raw_content}
-                ],
-                temperature=0.2,
-                max_tokens=3000,
-                response_format={"type": "json_object"}
-            )
+            structured_json = await process_drawing(raw_content, drawing_type, client)
             
             pbar.update(40)  # API call completed
-            structured_json = response.choices[0].message.content
             
             type_folder = os.path.join(output_folder, drawing_type)
             os.makedirs(type_folder, exist_ok=True)
