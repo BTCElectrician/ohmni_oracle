@@ -1,0 +1,11 @@
+{
+    "roomId": "id",
+    "walls": {
+        "north": "north_wall",
+        "south": "south_wall",
+        "east": "east_wall",
+        "west": "west_wall"
+    },
+    "ceiling_height": "ceiling_height",
+    "dimensions": "dimensions"
+}
