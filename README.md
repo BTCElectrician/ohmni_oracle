@@ -1,6 +1,6 @@
 # Ohmni Oracle
 
-This project processes various types of architectural and engineering drawings, including electrical, mechanical, plumbing, and architectural documents. It extracts structured data from PDFs using GPT-4-0613 (previously referred to as GPT-4o-mini).
+This project processes various types of architectural and engineering drawings, including electrical, mechanical, plumbing, and architectural documents. It extracts structured data from PDFs using gpt-4o-mini.
 
 ## Setup
 
@@ -77,3 +77,21 @@ The script uses Python's built-in logging module to record important events and 
 - Implement Pydantic models for more robust data validation and serialization
 - Add unit tests for better code reliability
 - Consider using async file I/O operations for improved performance
+
+## Folder Structure
+ohmni_oracle/
+├── main.py
+├── drawing_processor.py
+├── pdf_processor.py
+├── README.md
+├── requirements.txt
+├── .gitignore
+├── templates/
+│   ├── room_templates.py
+│   ├── a_rooms_template.json
+│   └── e_rooms_template.json
+├── utils/
+│   ├── pdf_utils.py
+│   └── file_utils.py
+└── logs/
+└── room_templates.log
