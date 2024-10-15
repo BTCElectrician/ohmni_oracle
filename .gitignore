@@ -1,2 +1,27 @@
 room_templates.log
 **/__pycache__/
+# Logs
+*.log
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual Environment
+venv/
+env/
+*.venv
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Project-specific
+*.sqlite3
