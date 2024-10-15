@@ -28,7 +28,7 @@ async def process_drawing(raw_content: str, drawing_type: str, client: AsyncOpen
                 {"role": "user", "content": raw_content}
             ],
             temperature=0.2,
-            max_tokens=3000,
+            max_tokens=16000,  # Updated to a higher value, but still within the model's limit
             response_format={"type": "json_object"}
         )
         return response.choices[0].message.content
