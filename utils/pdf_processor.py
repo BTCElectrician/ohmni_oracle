@@ -1,11 +1,7 @@
 import pymupdf
 import json
 import os
-import logging
 from openai import AsyncOpenAI
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 async def extract_text_and_tables_from_pdf(pdf_path: str) -> str:
     doc = pymupdf.open(pdf_path)
@@ -45,7 +41,7 @@ async def structure_panel_data(client: AsyncOpenAI, raw_content: str) -> dict:
     return json.loads(response.choices[0].message.content)
 
 async def process_pdf(pdf_path: str, output_folder: str, client: AsyncOpenAI):
-    logger.info(f"Processing PDF: {pdf_path}")
+    print(f"Processing PDF: {pdf_path}")
     raw_content = await extract_text_and_tables_from_pdf(pdf_path)
     
     structured_data = await structure_panel_data(client, raw_content)
@@ -57,5 +53,5 @@ async def process_pdf(pdf_path: str, output_folder: str, client: AsyncOpenAI):
     with open(filepath, 'w') as f:
         json.dump(structured_data, f, indent=2)
     
-    logger.info(f"Saved structured panel data: {filepath}")
+    print(f"Saved structured panel data: {filepath}")
     return raw_content, structured_data
