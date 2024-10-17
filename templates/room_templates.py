@@ -13,9 +13,9 @@ def setup_logger():
     file_handler = RotatingFileHandler(log_file, maxBytes=10*1024*1024, backupCount=5)
     console_handler = logging.StreamHandler()
     
-    file_handler.setLevel(logging.INFO)
+    file_handler.setLevel(logging.DEBUG)
     console_handler.setLevel(logging.INFO)
-    logging.getLogger('').setLevel(logging.INFO)
+    logging.getLogger('').setLevel(logging.DEBUG)
     
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
     file_handler.setFormatter(formatter)
@@ -44,45 +44,46 @@ def load_template(template_name):
 def generate_rooms_data(parsed_data, room_type):
     template = load_template(room_type)
     
-    metadata = {
-        "drawing_number": parsed_data.get('metadata', {}).get('drawing_number', ''),
-        "date": parsed_data.get('metadata', {}).get('date', ''),
-        "project": parsed_data.get('metadata', {}).get('project', ''),
-        "address": parsed_data.get('metadata', {}).get('address', ''),
-        "job_number": parsed_data.get('metadata', {}).get('job_number', ''),
-        "revisions": parsed_data.get('metadata', {}).get('revisions', [])
-    }
+    metadata = parsed_data.get('metadata', {})
     
     rooms_data = {
         "metadata": metadata,
-        "project_name": parsed_data.get('metadata', {}).get('project', ''),
-        "floor_number": '',  # Floor number is not provided in the structured data
+        "project_name": metadata.get('project', ''),
+        "floor_number": '',
         "rooms": []
     }
     
     logger.info(f"Generating {room_type} data for project: {rooms_data['project_name']}")
+    logger.debug(f"Parsed data: {json.dumps(parsed_data, indent=2)}")
     
-    rooms = parsed_data.get('rooms', [])
-    if not rooms:
-        logger.warning(f"No rooms found in parsed data for {room_type}")
+    parsed_rooms = parsed_data.get('rooms', [])
+    logger.debug(f"Parsed rooms: {json.dumps(parsed_rooms, indent=2)}")
     
-    for room in rooms:
-        room_number = str(room.get('number', ''))
-        room_name = room.get('name', '')
+    if not parsed_rooms:
+        logger.warning(f"No rooms found in parsed data for {room_type}.")
+        return rooms_data
+
+    for parsed_room in parsed_rooms:
+        room_number = str(parsed_room.get('number', ''))
+        room_name = parsed_room.get('name', '')
         
-        room_data = template.copy()  # Create a copy of the template for each room
+        if not room_number or not room_name:
+            logger.warning(f"Skipping room with incomplete data: {parsed_room}")
+            continue
         
-        if room_type == 'e_rooms':
-            room_data['room_id'] = f"Room_{room_number}"
-            room_data['room_name'] = f"{room_name} {room_number}"
-        elif room_type == 'a_rooms':
-            room_data['roomId'] = f"Room_{room_number}"
-            room_data['name'] = f"{room_name} {room_number}"
-            room_data['height'] = room.get('height', '')
+        room_data = template.copy()
+        room_data['room_id'] = f"Room_{room_number}"
+        room_data['room_name'] = f"{room_name}_{room_number}"
+        
+        # Copy all fields from parsed_room to room_data
+        for key, value in parsed_room.items():
+            if key not in ['number', 'name']:  # Avoid duplicating number and name
+                room_data[key] = value
         
         rooms_data['rooms'].append(room_data)
     
     logger.info(f"Generated data for {len(rooms_data['rooms'])} rooms")
+    logger.debug(f"Generated rooms data: {json.dumps(rooms_data, indent=2)}")
     return rooms_data
 
 def process_architectural_drawing(parsed_data, file_path, output_folder):
@@ -93,7 +94,7 @@ def process_architectural_drawing(parsed_data, file_path, output_folder):
     
     project_name = parsed_data.get('metadata', {}).get('project', '')
     job_number = parsed_data.get('metadata', {}).get('job_number', '')
-    floor_number = ''  # Floor number is not provided in the structured data
+    floor_number = ''  # If floor number is available in the future, extract it here
     
     logger.info(f"Project: {project_name}, Job Number: {job_number}, Floor: {floor_number}")
     
@@ -117,3 +118,14 @@ def process_architectural_drawing(parsed_data, file_path, output_folder):
         "a_rooms_file": a_rooms_file,
         "is_reflected_ceiling": is_reflected_ceiling
     }
+
+if __name__ == "__main__":
+    # This block is for testing purposes. You can remove it if not needed.
+    test_file_path = "path/to/your/test/file.json"
+    test_output_folder = "path/to/your/test/output/folder"
+    
+    with open(test_file_path, 'r') as f:
+        test_parsed_data = json.load(f)
+    
+    result = process_architectural_drawing(test_parsed_data, test_file_path, test_output_folder)
+    print(result)

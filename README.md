@@ -28,7 +28,7 @@ This project processes various types of architectural and engineering drawings, 
 Run the script with the following command: python main.py <path_to_job_folder> [<output_folder>]
 The script processes all PDF files in the given job folder:
 1. Extracts text and tables from PDFs
-2. Uses GPT-4-0613 to structure the data into JSON format
+2. Uses gpt-4o-mini to structure the data into JSON format
 3. Generates structured JSON files for all drawings
 4. Creates special files for architectural and electrical drawings:
    - `a_rooms_details_floor_[floor_number].json`: for architectural drawings
