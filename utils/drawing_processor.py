@@ -1,4 +1,3 @@
-import logging
 from openai import AsyncOpenAI
 
 DRAWING_INSTRUCTIONS = {
@@ -32,7 +31,7 @@ async def process_drawing(raw_content: str, drawing_type: str, client: AsyncOpen
     6. For all drawing types, if room information is present, always include a 'rooms' array in the JSON output, with each room having at least 'number' and 'name' fields.
     Ensure the entire response is a valid JSON object.
     """
-
+    
     try:
         response = await client.chat.completions.create(
             model="gpt-4o-mini",
@@ -46,5 +45,5 @@ async def process_drawing(raw_content: str, drawing_type: str, client: AsyncOpen
         )
         return response.choices[0].message.content
     except Exception as e:
-        logging.error(f"Error processing {drawing_type} drawing: {str(e)}")
+        print(f"Error processing {drawing_type} drawing: {str(e)}")
         raise
