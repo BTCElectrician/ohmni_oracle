@@ -44,7 +44,17 @@ def load_template(template_name):
 def generate_rooms_data(parsed_data, room_type):
     template = load_template(room_type)
     
+    metadata = {
+        "drawing_number": parsed_data.get('metadata', {}).get('drawing_number', ''),
+        "date": parsed_data.get('metadata', {}).get('date', ''),
+        "project": parsed_data.get('metadata', {}).get('project', ''),
+        "address": parsed_data.get('metadata', {}).get('address', ''),
+        "job_number": parsed_data.get('metadata', {}).get('job_number', ''),
+        "revisions": parsed_data.get('metadata', {}).get('revisions', [])
+    }
+    
     rooms_data = {
+        "metadata": metadata,
         "project_name": parsed_data.get('metadata', {}).get('project', ''),
         "floor_number": '',  # Floor number is not provided in the structured data
         "rooms": []
@@ -57,18 +67,18 @@ def generate_rooms_data(parsed_data, room_type):
         logger.warning(f"No rooms found in parsed data for {room_type}")
     
     for room in rooms:
-        room_id = str(room.get('number', ''))
+        room_number = str(room.get('number', ''))
         room_name = room.get('name', '')
         
         room_data = template.copy()  # Create a copy of the template for each room
         
         if room_type == 'e_rooms':
-            room_data['room_id'] = room_id
-            room_data['room_name'] = room_name
+            room_data['room_id'] = f"Room_{room_number}"
+            room_data['room_name'] = f"{room_name} {room_number}"
         elif room_type == 'a_rooms':
-            room_data['roomId'] = room_id
-            room_data['name'] = room_name
-            # Room height is not automatically populated here
+            room_data['roomId'] = f"Room_{room_number}"
+            room_data['name'] = f"{room_name} {room_number}"
+            room_data['height'] = room.get('height', '')
         
         rooms_data['rooms'].append(room_data)
     
