@@ -81,3 +81,26 @@ def get_project_name(job_folder: str) -> str:
     str: The project name.
     """
     return os.path.basename(job_folder)
+
+def detect_drawing_type(filename: str) -> tuple[str, bool]:
+    """
+    Detects drawing type and whether it's a panel schedule from filename.
+    
+    Args:
+        filename: Name of the drawing file
+    
+    Returns:
+        tuple: (drawing_type, is_panel_schedule)
+    """
+    filename_upper = filename.upper()
+    
+    # Check for electrical drawings first
+    if filename_upper.startswith('E'):
+        is_panel_schedule = any(term in filename_upper for term in [
+            'ELECTRICAL-SCHEDULES',
+            'ELECTRICAL-PANEL',
+            'PANEL-SCHEDULES'
+        ])
+        return ('Electrical', is_panel_schedule)
+    
+    # ... rest of the existing drawing type detection logic ...
