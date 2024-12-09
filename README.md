@@ -1,6 +1,6 @@
 # Ohmni Oracle
 
-This project processes various types of architectural and engineering drawings, including electrical, mechanical, plumbing, and architectural documents. It extracts structured data from PDFs using gpt-4o-mini.
+This project processes various types of architectural and engineering drawings, including electrical, mechanical, plumbing, and architectural documents. It extracts structured data from PDFs using gpt-4o-mini.  TESTING TO SEE IF THIS WORKS
 
 ## Setup
 
