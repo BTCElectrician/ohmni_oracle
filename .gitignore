@@ -25,3 +25,11 @@ Thumbs.db
 
 # Project-specific
 *.sqlite3
+
+# Environment variables
+.env
+.env.local
+.env.*
+!.env.example.env
+.DS_Store
+__pycache__/
